@@ -5,8 +5,10 @@
 
 - hosts: server
   become: yes
-  tasks:
+  vars:
+    APP_USER: rdf_demo
 
+  tasks:
   - name: update apt
     apt:
       update_cache: yes
@@ -38,3 +40,15 @@
       src: "{{ EXT4_DEVICE }}"
       path: "{{ MOUNT_POINT }}"
       fstype: ext4
+
+  - name: create app user
+    user:
+      name: "{{ APP_USER }}"
+
+  - name: create dir for app user on filesystem
+    file:
+      state: directory
+      path: "{{ MOUNT_POINT }}/{{ APP_USER }}"
+      owner: "{{ APP_USER }}"
+      group: "{{ APP_USER }}"
+      mode: 0770
