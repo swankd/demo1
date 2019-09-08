@@ -1,5 +1,8 @@
 #!/usr/bin/ansible-playbook
 
+# NB: not all interactions with the server are automated.
+# NB: e.g. apt-get upgrade and reboot as needed are expected to be done manually.
+
 - hosts: server
   become: yes
   tasks:
@@ -12,3 +15,9 @@
   - name: install apt pkgs
     apt:
       name: [gkrellm]
+
+  - name: create partition on disk
+    parted:
+      device: "{{ PARTED_DEVICE }}"
+      number: 1
+      state: present
