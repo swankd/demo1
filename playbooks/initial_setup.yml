@@ -1,0 +1,11 @@
+#!/usr/bin/ansible-playbook
+
+- hosts: server
+  become: yes
+  tasks:
+
+  - name: update apt
+    apt:
+      update_cache: yes
+      cache_valid_time: 600
+
