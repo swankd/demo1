@@ -21,3 +21,20 @@
       device: "{{ PARTED_DEVICE }}"
       number: 1
       state: present
+
+  - name: create filesystem
+    filesystem:
+      dev: "{{ EXT4_DEVICE }}"
+      fstype: ext4
+
+  - name: create mount point
+    file:
+      state: directory
+      path: "{{ MOUNT_POINT }}"
+
+  - name: mount filesystem
+    mount:
+      state: mounted
+      src: "{{ EXT4_DEVICE }}"
+      path: "{{ MOUNT_POINT }}"
+      fstype: ext4
