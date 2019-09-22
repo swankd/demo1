@@ -1,0 +1,31 @@
+#!/usr/bin/ansible-playbook
+
+- hosts: server
+  become: yes
+  vars:
+    APP_USER: rdf_demo
+    HDT_VIRTUALENV: /home/{{ APP_USER }}/hdt_venv
+
+  tasks:
+  - name: update apt
+    apt:
+      update_cache: yes
+      cache_valid_time: 600
+
+  - name: install apt pkgs
+    apt:
+      name: [g++, python3-dev, virtualenv]
+
+  - name: create app user
+    user:
+      name: "{{ APP_USER }}"
+
+  - name: pip install pybind11 into hdt virtualenv
+    pip:
+      name: pybind11
+      virtualenv: "{{ HDT_VIRTUALENV }}"
+
+  - name: pip install hdt into hdt virtualenv
+    pip:
+      name: hdt
+      virtualenv: "{{ HDT_VIRTUALENV }}"
