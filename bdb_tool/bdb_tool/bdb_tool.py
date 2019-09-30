@@ -46,3 +46,7 @@ class BdbUniqueId(object):
 
     def element(self, id_):
         return self.ids.get(id_)
+
+    def compact(self):
+        self.elements.compact()
+        self.ids.compact()
