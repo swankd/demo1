@@ -2,9 +2,9 @@
 from flask import request
 
 from .app import app
-from .db import DB
+from .db import BdbRDFGraph
 
-db = DB()
+graph = BdbRDFGraph()
 
 
 def request_args(name, func, default):
@@ -16,18 +16,20 @@ def request_args(name, func, default):
 
 @app.route('/')
 def root():
-    return '<br>\n'.join([f'{db.nnouns} nouns',
-                          f'{db.nverbs} verbs',
-                          f'{db.nedges} edges'])
+    return '<br>\n'.join([f'{graph.nnouns} nouns',
+                          f'{graph.nverbs} verbs',
+                          f'{graph.nedges} edges'])
 
 
 @app.route('/noun/')
 def nouns():
     nitems = request_args('nitems', int, 20)
-    return '<br>\n'.join([f'{key} : {value}' for key, value in db.nouns.items()[:nitems]])
+    return '<br>\n'.join([f'{key} : {value}'
+                          for key, value in graph.nouns.items()[:nitems]])
 
 
 @app.route('/verb/')
 def verbs():
     nitems = request_args('nitems', int, 20)
-    return '<br>\n'.join([f'{key} : {value}' for key, value in db.verbs.items()[:nitems]])
+    return '<br>\n'.join([f'{key} : {value}'
+                          for key, value in graph.verbs.items()[:nitems]])

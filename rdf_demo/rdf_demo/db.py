@@ -6,7 +6,7 @@ from bdb_tool import open_db, db_nkeys, BdbUniqueId
 from .config import get_config
 
 
-class DB():
+class BdbRDFGraph():
     def __init__(self, config=None, log=None):
         self.config = config or get_config()
         self.log = log or print
