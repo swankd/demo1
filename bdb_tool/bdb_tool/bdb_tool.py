@@ -32,7 +32,9 @@ class BdbUniqueId(object):
         self.ids = open_db(join(dir_, f'{name}id{suffix}'))
         self.n_elements = db_nkeys(self.elements, name, log)
         n_ids = db_nkeys(self.ids, name + 'id', log)
-        assert self.n_elements == n_ids, (self.n_elements, n_ids, dir_, name, suffix)
+        if self.n_elements != n_ids:
+            msg = 'W: n_elements ({}) != n_ids ({}), {}, {}, {}'
+            self.log(msg.format(self.n_elements, n_ids, dir_, name, suffix))
         self.log(f'number of {name}s is {n_ids}')
 
     def element_id(self, str_):
