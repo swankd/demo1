@@ -18,7 +18,8 @@ def request_args(name, func, default):
 def root():
     return '<br>\n'.join([f'{graph.nnouns} nouns',
                           f'{graph.nverbs} verbs',
-                          f'{graph.nedges} edges'])
+                          f'{graph.n_in_edges} inbound edges',
+                          f'{graph.n_out_edges} outbound edges'])
 
 
 @app.route('/noun/')
