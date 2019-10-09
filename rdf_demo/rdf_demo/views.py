@@ -1,7 +1,7 @@
 
 import json
 
-from flask import jsonify, request, url_for
+from flask import abort, jsonify, request, url_for
 
 from .app import app
 from .db import BdbRDFGraph
@@ -17,7 +17,10 @@ def request_args(name, func, default):
 
 
 def noun_reference(id_):
-    return {'value': graph.nouns.element_str(id_), 'href': url_for('noun', id_=id_)}
+    try:
+        return {'value': graph.nouns.element_str(id_), 'href': url_for('noun', id_=id_)}
+    except AttributeError:
+        abort(404)
 
 
 def verb_reference(id_):
