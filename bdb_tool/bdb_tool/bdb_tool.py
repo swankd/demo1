@@ -7,12 +7,20 @@ def dev_null(msg):
     pass
 
 
-def open_db(path):
+def open_db(path, pagesize=None, fillfactor=None, nelements=None):
     db = bdb.DB()
     if isfile(path):
         open_args = tuple()
     else:
         open_args = (None, bdb.DB_HASH, bdb.DB_CREATE)
+
+    if pagesize:
+        db.set_pagesize(pagesize)
+    if fillfactor:
+        db.set_h_ffactor(fillfactor)
+    if nelements:
+        db.set_h_nelem(nelements)
+
     db.open(path, *open_args)
     return db
 
@@ -26,10 +34,10 @@ class BdbUniqueId(object):
     '''
     A pair of berkeley dbs: a map of strings to unique ids, and its inverse.
     '''
-    def __init__(self, dir_, name, suffix="s.db3", log=dev_null):
+    def __init__(self, dir_, name, suffix="s.db3", log=dev_null, **open_db_kwargs):
         self.log = log
-        self.elements = open_db(join(dir_, f'{name}{suffix}'))
-        self.ids = open_db(join(dir_, f'{name}id{suffix}'))
+        self.elements = open_db(join(dir_, f'{name}{suffix}'), **open_db_kwargs)
+        self.ids = open_db(join(dir_, f'{name}id{suffix}'), **open_db_kwargs)
         self.n_elements = db_nkeys(self.elements, name, log)
         n_ids = db_nkeys(self.ids, name + 'id', log)
         if self.n_elements != n_ids:
