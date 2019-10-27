@@ -36,11 +36,11 @@ class GitSet():
     def __len__(self):
         return int(self.repo[self._lookup_reference(self.nname).target])
 
-    def __contains__(self, query_element):
+    def __contains__(self, key):
         id_ = self._lookup_reference(self.name).target
         while id_ != self.none:
             element, id_ = json.loads(self.repo[id_].data)  # it's a linked list!
-            if element == query_element:
+            if element == key:
                 return True
         return False
 
