@@ -5,11 +5,12 @@ from pygit2 import GitError, Repository, init_repository, GIT_OBJ_BLOB
 
 
 class GitSet():
-    def __init__(self, dir_, name, log=None, do_create=False):
+    def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags'):
         self.dir_ = dir_
         self.name = name
         self.nname = 'n' + name
         self.log = log or print
+        self.refs_ns = refs_ns
         try:
             self.repo = Repository(dir_)
         except GitError as e:
@@ -23,14 +24,14 @@ class GitSet():
     def __repr__(self):
         return f'GitSet("{self.dir_}", "{self.name}")'
 
-    def _lookup_reference(self, name, namespace='tags'):
-        return self.repo.lookup_reference(f'refs/{namespace}/{name}')
+    def _lookup_reference(self, name):
+        return self.repo.lookup_reference(f'refs/{self.refs_ns}/{name}')
 
-    def _set_reference(self, name, target, namespace='tags'):
+    def _set_reference(self, name, target):
         try:
-            self._lookup_reference(name, namespace).set_target(target)
+            self._lookup_reference(name).set_target(target)
         except KeyError:
-            self.repo.references.create(f'refs/{namespace}/{name}', target)
+            self.repo.references.create(f'refs/{self.refs_ns}/{name}', target)
 
     def _init(self):
         self._set_reference(self.nname, self.repo.write(GIT_OBJ_BLOB, '0'))
