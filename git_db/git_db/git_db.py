@@ -20,6 +20,9 @@ class GitSet():
         self.none = self.repo.write(GIT_OBJ_BLOB, '')
         self._init()
 
+    def __repr__(self):
+        return f'GitSet("{self.dir_}", "{self.name}")'
+
     def _lookup_reference(self, name, namespace='tags'):
         return self.repo.lookup_reference(f'refs/{namespace}/{name}')
 
@@ -52,4 +55,4 @@ class GitSet():
         self._set_reference(self.nname, new_size)
 
     def report(self):
-        self.log(f'GitSet: {self.dir_}: {self.name}: contains {len(self)} elements.')
+        self.log(f'{repr(self)}: contains {len(self)} elements.')
