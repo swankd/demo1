@@ -4,7 +4,7 @@ import json
 from pygit2 import GitError, Repository, init_repository, GIT_OBJ_BLOB
 
 
-class GitSet():
+class GitDict():
     def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags'):
         self.dir_ = dir_
         self.name = name
@@ -22,7 +22,7 @@ class GitSet():
         self._init()
 
     def __repr__(self):
-        return f'GitSet("{self.dir_}", "{self.name}")'
+        return f'GitDict("{self.dir_}", "{self.name}")'
 
     def _lookup_reference(self, name):
         return self.repo.lookup_reference(f'refs/{self.refs_ns}/{name}')

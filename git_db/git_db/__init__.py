@@ -1,2 +1,2 @@
 
-from .git_db import GitSet
+from .git_db import GitDict

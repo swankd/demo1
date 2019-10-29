@@ -2,13 +2,13 @@
 import tempfile
 import unittest
 
-from git_db import GitSet
+from git_db import GitDict
 
 
-class TestGitSet(unittest.TestCase):
+class TestGitDict(unittest.TestCase):
     def test1(self):
         with tempfile.TemporaryDirectory() as dir_:
-            gd = GitSet(dir_, 'stuff', do_create=True)
+            gd = GitDict(dir_, 'stuff', do_create=True)
             self.assertNotIn('xyz', gd)
             self.assertEqual(len(gd), 0)
             gd.report()
