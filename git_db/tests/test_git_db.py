@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from git_db import GitDict
-from git_db.git_db import find_in_page
+from git_db.searchpage import find_in_page
 
 
 class TestGitDict(unittest.TestCase):
