@@ -1,69 +1,67 @@
 
+
 def cmp(a, b):
     return (a > b) - (a < b)
 
 
-class BadPage(Exception):
-    pass
-
-
-class BadPageSize(BadPage):
-    pass
-
-
-class BadWidth(ValueError):
-    pass
-
-
-def find_in_page(page, oid, width):
+class SearchPage():
     '''
-    Binary search for ``oid`` in ``page``.  ``width`` may be 18 or 38.  len(``oid``) must
-    be 18.  len(``page``) must be multiple of ``width``.
-
-    Return value is None if ``oid`` is not found in ``page``.
-
-    If ``oid`` is found, return value is the 20 bytes following the occurrence of ``oid``
-    in ``page`` if ``width`` is 38, or True if ``width`` is 18.
+    Collection of uniformly-sized byte strings stored as a single byte string to support
+    binary search.
     '''
-    def compare_entry(k):
-        pos = k * width
-        entry = page[pos:pos + width]
-        result = cmp(oid, entry[:18])
-        if result == 0 and width == 38:
-            return entry[18:]
-        else:
+    def __init__(self, data, key_width, value_width):
+        self.data = data
+        self.key_width = key_width
+        self.value_width = value_width
+        self.width = key_width + value_width
+        if key_width < 0:
+            raise ValueError(key_width)
+        if value_width < 0:
+            raise ValueError(value_width)
+        if len(data) % self.width:
+            raise ValueError((data, key_width, value_width))
+
+    def __len__(self):
+        return len(self.data) // self.width
+
+    def find(self, key):
+
+        def compare_entry(k):
+            pos = k * self.width
+            kth_entry = self.data[pos:pos + self.width]
+            result = cmp(key, kth_entry[:self.key_width])
+            if result == 0:
+                return kth_entry[self.key_width:]
+            else:
+                return result
+
+        if len(key) != self.key_width:
+            raise ValueError(key)
+
+        nentries = len(self)
+        k0 = 0
+        k1 = nentries - 1
+        while True:
+            assert k1 >= k0
+            kmid = (k0 + k1) // 2
+            result = compare_entry(kmid)
+            if result == 0 or isinstance(result, bytes):
+                break
+
+            if k0 == k1:
+                break
+            if k1 - k0 == 1:
+                result = compare_entry(k1)
+                break
+
+            if result < 0:
+                k1 = kmid - 1
+            else:
+                k0 = kmid + 1
+
+        if result == 0:
+            return True
+        elif isinstance(result, bytes):
             return result
-
-    if width not in (18, 38):
-        raise BadWidth(width)
-
-    if len(page) % width:
-        raise BadPageSize((len(page), width))
-
-    nentries = len(page) // width
-    k0 = 0
-    k1 = nentries - 1
-    while True:
-        assert k1 >= k0
-        kmid = (k0 + k1) // 2
-        result = compare_entry(kmid)
-        if result == 0 or isinstance(result, bytes):
-            break
-
-        if k0 == k1:
-            break
-        if k1 - k0 == 1:
-            result = compare_entry(k1)
-            break
-
-        if result < 0:
-            k1 = kmid - 1
         else:
-            k0 = kmid + 1
-
-    if result == 0:
-        return True
-    elif isinstance(result, bytes):
-        return result
-    else:
-        return None
+            return None

@@ -3,8 +3,7 @@ import random
 import tempfile
 import unittest
 
-from git_db import GitDict
-from git_db.searchpage import find_in_page
+from git_db import GitDict, SearchPage
 
 
 class TestGitDict(unittest.TestCase):
@@ -31,7 +30,7 @@ class TestGitDict(unittest.TestCase):
             self.assertEqual(len(gd), 3)
 
 
-class Test_find_in_page(unittest.TestCase):
+class TestSearchPage(unittest.TestCase):
     def make_page_entry(self, width):
         return bytes([random.randint(97, 122) for x in range(width)])
 
@@ -43,28 +42,29 @@ class Test_find_in_page(unittest.TestCase):
             entries += [include_entry]
         for entry in sorted(entries):
             print(entry)
-        return b''.join(sorted(entries))
+        return SearchPage(b''.join(sorted(entries)),
+                          *((18, 0) if width == 18 else (18, 20)))
 
     def test18_missing(self):
         for _ in range(10):
             entry = self.make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20))
-            self.assertIsNone(find_in_page(page, entry, 18))
+            self.assertIsNone(page.find(entry))
 
     def test18_present(self):
         for _ in range(100):
             entry = self.make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20), entry)
-            self.assertTrue(find_in_page(page, entry, 18))
+            self.assertEqual(page.find(entry), b'')
 
     def test38_missing(self):
         for _ in range(10):
             entry = self.make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20))
-            self.assertIsNone(find_in_page(page, entry[:18], 38))
+            self.assertIsNone(page.find(entry[:18]))
 
     def test38_present(self):
         for _ in range(100):
             entry = self.make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20), entry)
-            self.assertEqual(find_in_page(page, entry[:18], 38), entry[18:])
+            self.assertEqual(page.find(entry[:18]), entry[18:])
