@@ -24,7 +24,7 @@ class SearchPage():
     def __len__(self):
         return len(self.data) // self.width
 
-    def find(self, key):
+    def get(self, key, default=None):
 
         def compare_entry(k):
             pos = k * self.width
@@ -64,4 +64,4 @@ class SearchPage():
         elif isinstance(result, bytes):
             return result
         else:
-            return None
+            return default

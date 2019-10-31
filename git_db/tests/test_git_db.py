@@ -49,22 +49,22 @@ class TestSearchPage(unittest.TestCase):
         for _ in range(10):
             entry = self.make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20))
-            self.assertIsNone(page.find(entry))
+            self.assertIsNone(page.get(entry))
 
     def test18_present(self):
         for _ in range(100):
             entry = self.make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20), entry)
-            self.assertEqual(page.find(entry), b'')
+            self.assertEqual(page.get(entry), b'')
 
     def test38_missing(self):
         for _ in range(10):
             entry = self.make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20))
-            self.assertIsNone(page.find(entry[:18]))
+            self.assertIsNone(page.get(entry[:18]))
 
     def test38_present(self):
         for _ in range(100):
             entry = self.make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20), entry)
-            self.assertEqual(page.find(entry[:18]), entry[18:])
+            self.assertEqual(page.get(entry[:18]), entry[18:])
