@@ -10,6 +10,8 @@ class SearchPage():
     binary search.
     '''
     def __init__(self, data, key_width, value_width):
+        if not isinstance(data, bytes):
+            raise ValueError(data)
         self.data = data
         self.key_width = key_width
         self.value_width = value_width
@@ -39,6 +41,9 @@ class SearchPage():
             raise ValueError(key)
 
         nentries = len(self)
+        if not nentries:
+            return 1, 0
+
         k0 = 0
         k1 = nentries - 1
         while True:
@@ -46,12 +51,16 @@ class SearchPage():
             kmid = (k0 + k1) // 2
             result = compare_entry(kmid)
             if isinstance(result, bytes):
+                k1 = kmid
                 break
 
             if k0 == k1:
                 break
             if k1 - k0 == 1:
-                result = compare_entry(k1)
+                if result > 0:
+                    result = compare_entry(k1)
+                else:
+                    k1 = k0
                 break
 
             if result < 0:
@@ -59,11 +68,59 @@ class SearchPage():
             else:
                 k0 = kmid + 1
 
-        return result
+        return result, k1
 
     def get(self, key, default=None):
-        entry = self.get_entry(key)
+        entry, k = self.get_entry(key)
         if isinstance(entry, bytes):
             return entry[self.key_width:]
         else:
             return default
+
+    def _elements(self, a, b):
+        elements = []
+        for k in range(len(self)):
+            pos = k * self.width
+            elements.append(self.data[pos + a:pos + b])
+        return elements
+
+    def items(self):
+        return self._elements(0, self.width)
+
+    def keys(self):
+        return self._elements(0, self.key_width)
+
+    def values(self):
+        return self._elements(self.key_width, self.width)
+
+    def __contains__(self, key):
+        return self.get(key) is not None
+
+    def __getitem__(self, key):
+        value = self.get(key)
+        if value is None:
+            raise KeyError(key)
+        return value
+
+    def __setitem__(self, key, value):
+        if len(key) != self.key_width:
+            raise ValueError(key)
+
+        if len(value) != self.value_width:
+            raise ValueError(value)
+
+        new_entry = b'%s%s' % (key, value)
+        entry, k = self.get_entry(key)
+
+        if isinstance(entry, bytes):
+            assert entry[:self.key_width] == key
+            offset = self.width
+        else:
+            offset = 0
+            k = max(0, k)
+            if entry == 1:
+                k += 1
+
+        entry_pos = k * self.width
+        self.data = b'%s%s%s' % (self.data[:entry_pos], new_entry,
+                                 self.data[entry_pos + offset:])
