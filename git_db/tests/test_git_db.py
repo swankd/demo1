@@ -3,7 +3,24 @@ import random
 import tempfile
 import unittest
 
+from pygit2 import hash as pyghash
+
 from git_db import GitDict, SearchPage
+from git_db.git_db import PageTable
+
+
+class TestPageTable(unittest.TestCase):
+    def test1(self):
+        table = PageTable()
+        self.assertEqual(table[0], table.EMPTY_PAGE_ID)
+        self.assertEqual(table[-1], table.EMPTY_PAGE_ID)
+
+    def test2(self):
+        table = PageTable()
+        for k in range(64):
+            table[k - 32] = pyghash(str(k)).raw
+        for k in range(64):
+            self.assertEqual(table[k - 32], pyghash(str(k)).raw)
 
 
 class TestGitDict(unittest.TestCase):

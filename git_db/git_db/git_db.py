@@ -1,7 +1,26 @@
 
 import json
 
-from pygit2 import GitError, Repository, init_repository, GIT_OBJ_BLOB
+from pygit2 import (GitError, Repository, init_repository, hash as pyghash,
+                    GIT_OBJ_BLOB)
+
+
+class PageTable():
+    EMPTY_PAGE_ID = pyghash(b'').raw
+    TABLE_SIZE = 65536
+
+    def __init__(self, data=None):
+        self.data = data or self.EMPTY_PAGE_ID * self.TABLE_SIZE
+
+    def __getitem__(self, k):
+        pos = (k % self.TABLE_SIZE) * 20
+        return self.data[pos:pos + 20]
+
+    def __setitem__(self, k, value):
+        if len(value) != 20 or not isinstance(value, bytes):
+            raise ValueError(value)
+        pos = (k % self.TABLE_SIZE) * 20
+        self.data = b'%s%s%s' % (self.data[:pos], value, self.data[pos + 20:])
 
 
 class GitDict():
