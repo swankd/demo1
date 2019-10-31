@@ -24,14 +24,14 @@ class SearchPage():
     def __len__(self):
         return len(self.data) // self.width
 
-    def get(self, key, default=None):
+    def get_entry(self, key):
 
         def compare_entry(k):
             pos = k * self.width
             kth_entry = self.data[pos:pos + self.width]
             result = cmp(key, kth_entry[:self.key_width])
             if result == 0:
-                return kth_entry[self.key_width:]
+                return kth_entry
             else:
                 return result
 
@@ -45,7 +45,7 @@ class SearchPage():
             assert k1 >= k0
             kmid = (k0 + k1) // 2
             result = compare_entry(kmid)
-            if result == 0 or isinstance(result, bytes):
+            if isinstance(result, bytes):
                 break
 
             if k0 == k1:
@@ -59,9 +59,11 @@ class SearchPage():
             else:
                 k0 = kmid + 1
 
-        if result == 0:
-            return True
-        elif isinstance(result, bytes):
-            return result
+        return result
+
+    def get(self, key, default=None):
+        entry = self.get_entry(key)
+        if isinstance(entry, bytes):
+            return entry[self.key_width:]
         else:
             return default
