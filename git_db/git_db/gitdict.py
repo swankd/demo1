@@ -8,7 +8,7 @@ from .searchpage import SearchPage, PageTable, pyghash
 
 class ItemPage(SearchPage):
     def __init__(self, data=b''):
-        SearchPage.__init__(self, data, 18, 20)
+        SearchPage.__init__(self, data, 20, 20)
 
 
 class GitDict():
@@ -83,7 +83,7 @@ class GitDict():
     def __getitem__(self, key):
         key_oid = pyghash(key).raw
         page = self._get_page(key_oid)
-        value_oid = page[key_oid[2:]]
+        value_oid = page[key_oid]
         return self.repo[Oid(value_oid)].data
 
     def __setitem__(self, key, value):
@@ -92,10 +92,10 @@ class GitDict():
 
         table = self.items_table
         page = self._get_page(key_oid, table)
-        if key_oid[2:] in page:
+        if key_oid in page:
             return
 
-        page[key_oid[2:]] = value_oid
+        page[key_oid] = value_oid
         page_oid = self.repo.write(GIT_OBJ_BLOB, page.data).raw
         entry_no = key_oid[0] * 256 + key_oid[1]
         table[entry_no] = page_oid
