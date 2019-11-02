@@ -136,7 +136,7 @@ class SearchPage():
 
 class PageTable():
     EMPTY_PAGE_ID = pyghash(b'').raw
-    TABLE_SIZE = 65536
+    TABLE_SIZE = 128
 
     def __init__(self, data=None):
         self.data = data or self.EMPTY_PAGE_ID * self.TABLE_SIZE

@@ -173,9 +173,10 @@ class TestPageTable(unittest.TestCase):
 
     def _test_setting_items_somehow(self, func):
         table = PageTable()
-        items = {random.randint(0, 65535): make_page_entry(20) for _ in range(64)}
+        items = {random.randint(0, table.TABLE_SIZE - 1): make_page_entry(20)
+                 for _ in range(64)}
         func(table, items.items())
-        for p in range(65536):
+        for p in range(table.TABLE_SIZE):
             self.assertEqual(table[p], items.get(p, table.EMPTY_PAGE_ID))
 
     def test2(self):
