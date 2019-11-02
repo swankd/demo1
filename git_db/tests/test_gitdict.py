@@ -13,17 +13,23 @@ class TestGitDict(unittest.TestCase):
             self.assertEqual(len(gd), 0)
             gd.report()
 
-            gd.add('xyz')
+            gd['xyz'] = '123'
             self.assertIn('xyz', gd)
+            self.assertEqual(gd['xyz'], b'123')
             self.assertEqual(len(gd), 1)
 
-            gd.add('abc')
+            gd['abc'] = '456' * 9
             self.assertIn('xyz', gd)
             self.assertIn('abc', gd)
+            self.assertEqual(gd['xyz'], b'123')
+            self.assertEqual(gd['abc'], b'456' * 9)
             self.assertEqual(len(gd), 2)
 
-            gd.add('def')
+            gd['def'] = '789' * 999
             self.assertIn('xyz', gd)
             self.assertIn('abc', gd)
             self.assertIn('def', gd)
+            self.assertEqual(gd['xyz'], b'123')
+            self.assertEqual(gd['abc'], b'456' * 9)
+            self.assertEqual(gd['def'], b'789' * 999)
             self.assertEqual(len(gd), 3)
