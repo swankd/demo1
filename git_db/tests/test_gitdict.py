@@ -2,7 +2,7 @@
 import tempfile
 import unittest
 
-from git_db import GitDict
+from git_db.gitdict import GitDict
 
 
 class TestGitDict(unittest.TestCase):

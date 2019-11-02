@@ -1,2 +1,2 @@
 
-from .git_db import GitDict
+from .gitdict import GitDict
