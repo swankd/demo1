@@ -18,13 +18,16 @@ class GitDict():
     key-value pairs is stored in a one level hierarchy of pages (git objects) that are
     indexed by a page table (also a git object).
     '''
-    def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags'):
+    def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags',
+                 h_order=3):
         self.dir_ = dir_
         self.name = name
         self.name_size = name + '.size'
         self.name_items = name + '.items'
         self.log = log or print
         self.refs_ns = refs_ns
+        self.h_order = h_order
+        self.h_key_len = ((7 * h_order // 8) + 1) * 2
         try:
             self.repo = Repository(dir_)
         except GitError as e:
@@ -72,32 +75,39 @@ class GitDict():
         except KeyError:
             return False
 
-    def _get_page(self, key_oid, table=None):
+    def _key_oid_and_h_key(self, oid):
+        return oid.raw, int(oid.hex[:self.h_key_len], 16)
+
+    @staticmethod
+    def _entry_no(h_key, level):
+        return (h_key >> (7 * level)) & 127
+
+    def _get_page(self, h_key, table=None):
         table = table or self.items_table
-        entry_no = key_oid[0] * 256 + key_oid[1]
+        entry_no = self._entry_no(h_key, 0)
         try:
             return ItemPage(self.repo[Oid(table[entry_no])].data)
         except TypeError:
             return ItemPage()
 
     def __getitem__(self, key):
-        key_oid = pyghash(key).raw
-        page = self._get_page(key_oid)
+        key_oid, h_key = self._key_oid_and_h_key(pyghash(key))
+        page = self._get_page(h_key)
         value_oid = page[key_oid]
         return self.repo[Oid(value_oid)].data
 
     def __setitem__(self, key, value):
-        key_oid = self.repo.write(GIT_OBJ_BLOB, key).raw
+        key_oid, h_key = self._key_oid_and_h_key(self.repo.write(GIT_OBJ_BLOB, key))
         value_oid = self.repo.write(GIT_OBJ_BLOB, value).raw
 
         table = self.items_table
-        page = self._get_page(key_oid, table)
+        page = self._get_page(h_key, table)
         if key_oid in page:
             return
 
         page[key_oid] = value_oid
         page_oid = self.repo.write(GIT_OBJ_BLOB, page.data).raw
-        entry_no = key_oid[0] * 256 + key_oid[1]
+        entry_no = self._entry_no(h_key, 0)
         table[entry_no] = page_oid
         self.items_table = table
         self._inc_size()
