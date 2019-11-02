@@ -72,7 +72,7 @@ class GitDict():
         except KeyError:
             return False
 
-    def _page(self, key_oid, table=None):
+    def _get_page(self, key_oid, table=None):
         table = table or self.items_table
         entry_no = key_oid[0] * 256 + key_oid[1]
         try:
@@ -82,7 +82,7 @@ class GitDict():
 
     def __getitem__(self, key):
         key_oid = pyghash(key).raw
-        page = self._page(key_oid)
+        page = self._get_page(key_oid)
         value_oid = page[key_oid[2:]]
         return self.repo[Oid(value_oid)].data
 
@@ -91,7 +91,7 @@ class GitDict():
         value_oid = self.repo.write(GIT_OBJ_BLOB, value).raw
 
         table = self.items_table
-        page = self._page(key_oid, table)
+        page = self._get_page(key_oid, table)
         if key_oid[2:] in page:
             return
 
