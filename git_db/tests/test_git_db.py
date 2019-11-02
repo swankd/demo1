@@ -17,13 +17,19 @@ class TestPageTable(unittest.TestCase):
         self.assertEqual(table[0], table.EMPTY_PAGE_ID)
         self.assertEqual(table[-1], table.EMPTY_PAGE_ID)
 
-    def test2(self):
+    def _test_setting_items_somehow(self, func):
         table = PageTable()
         items = {random.randint(0, 65535): make_page_entry(20) for _ in range(64)}
-        for position, entry in items.items():
-            table[position] = entry
+        func(table, items.items())
         for p in range(65536):
             self.assertEqual(table[p], items.get(p, table.EMPTY_PAGE_ID))
+
+    def test2(self):
+        def set_items_one_entry_at_a_time(table, items):
+            for position, entry in items:
+                table[position] = entry
+
+        self._test_setting_items_somehow(set_items_one_entry_at_a_time)
 
 
 class TestGitDict(unittest.TestCase):
