@@ -124,6 +124,15 @@ class SearchPage():
         self.data = b'%s%s%s' % (self.data[:entry_pos], new_entry,
                                  self.data[entry_pos + offset:])
 
+    def __delitem__(self, key):
+        entry, k = self.get_entry(key)
+        if isinstance(entry, bytes):
+            entry_pos = k * self.width
+            self.data = b'%s%s' % (self.data[:entry_pos],
+                                   self.data[entry_pos + self.width:])
+        else:
+            raise KeyError(key)
+
 
 class PageTable():
     EMPTY_PAGE_ID = pyghash(b'').raw

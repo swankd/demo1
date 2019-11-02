@@ -134,6 +134,36 @@ class TestSearchPage(unittest.TestCase):
             items = page.items()
             self.assertEqual(items, sorted(items))
 
+    def test_delitem1(self):
+        page = SearchPage(b'', 1, 2)
+        with self.assertRaises(KeyError):
+            del page[b'x']
+        self.assertEqual(page.data, b'')
+
+    def test_delitem2(self):
+        page = SearchPage(b'x11', 1, 2)
+        del page[b'x']
+        self.assertEqual(page.data, b'')
+
+    def test_delitem3(self):
+        page = SearchPage(b'x11y22z33', 1, 2)
+        del page[b'x']
+        self.assertEqual(page.data, b'y22z33')
+        del page[b'y']
+        self.assertEqual(page.data, b'z33')
+
+    def test_delitem4(self):
+        page = SearchPage(b'x11y22z33', 1, 2)
+        del page[b'y']
+        self.assertEqual(page.data, b'x11z33')
+        del page[b'z']
+        self.assertEqual(page.data, b'x11')
+
+    def test_delitem5(self):
+        page = SearchPage(b'x11y22z33', 1, 2)
+        del page[b'z']
+        self.assertEqual(page.data, b'x11y22')
+
 
 class TestPageTable(unittest.TestCase):
     def test1(self):
