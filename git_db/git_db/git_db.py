@@ -22,6 +22,24 @@ class PageTable():
         pos = (k % self.TABLE_SIZE) * 20
         self.data = b'%s%s%s' % (self.data[:pos], value, self.data[pos + 20:])
 
+    @property
+    def entries(self):
+        entries = []
+        for k in range(self.TABLE_SIZE):
+            pos = k * 20
+            entries.append(self.data[pos:pos + 20])
+        return entries
+
+    @entries.setter
+    def entries(self, entries):
+        self.data = b''.join(entries)
+
+    def setitems(self, items):
+        entries = self.entries
+        for position, entry in items:
+            entries[position] = entry
+        self.entries = entries
+
 
 class GitDict():
     def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags'):

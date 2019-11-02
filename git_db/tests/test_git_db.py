@@ -31,6 +31,9 @@ class TestPageTable(unittest.TestCase):
 
         self._test_setting_items_somehow(set_items_one_entry_at_a_time)
 
+    def test3(self):
+        self._test_setting_items_somehow(lambda table, items: table.setitems(items))
+
 
 class TestGitDict(unittest.TestCase):
     def test1(self):
