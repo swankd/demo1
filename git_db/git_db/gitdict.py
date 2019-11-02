@@ -104,3 +104,13 @@ class GitDict():
 
     def report(self):
         self.log(f'{repr(self)}: contains {len(self)} elements.')
+
+    def keys(self):
+        table = self.items_table
+        keys = []
+        for k in range(table.TABLE_SIZE):
+            if table[k] != table.EMPTY_PAGE_ID:
+                page = ItemPage(self.repo[Oid(table[k])].data)
+                for key in page.keys():
+                    keys.append(self.repo[Oid(key)].data)
+        return keys
