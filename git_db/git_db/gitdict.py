@@ -40,6 +40,10 @@ class GitDict():
     def __len__(self):
         return int(self.repo[self._lookup_reference(self.name_size).target])
 
+    def _inc_size(self):
+        new_size = self.repo.write(GIT_OBJ_BLOB, str(len(self) + 1))
+        self._set_reference(self.name_size, new_size)
+
     def __contains__(self, key):
         id_ = self._lookup_reference(self.name).target
         while id_ != self.none:
@@ -52,8 +56,7 @@ class GitDict():
         old_head = self._lookup_reference(self.name).target
         new_head = self.repo.write(GIT_OBJ_BLOB, json.dumps([element, str(old_head)]))
         self._set_reference(self.name, new_head)
-        new_size = self.repo.write(GIT_OBJ_BLOB, str(len(self) + 1))
-        self._set_reference(self.name_size, new_size)
+        self._inc_size()
 
     def report(self):
         self.log(f'{repr(self)}: contains {len(self)} elements.')
