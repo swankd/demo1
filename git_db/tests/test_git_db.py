@@ -3,8 +3,6 @@ import random
 import tempfile
 import unittest
 
-from pygit2 import hash as pyghash
-
 from git_db import GitDict, SearchPage
 from git_db.git_db import PageTable
 
@@ -21,10 +19,11 @@ class TestPageTable(unittest.TestCase):
 
     def test2(self):
         table = PageTable()
-        for k in range(64):
-            table[k - 32] = pyghash(str(k)).raw
-        for k in range(64):
-            self.assertEqual(table[k - 32], pyghash(str(k)).raw)
+        items = {random.randint(0, 65535): make_page_entry(20) for _ in range(64)}
+        for position, entry in items.items():
+            table[position] = entry
+        for p in range(65536):
+            self.assertEqual(table[p], items.get(p, table.EMPTY_PAGE_ID))
 
 
 class TestGitDict(unittest.TestCase):
