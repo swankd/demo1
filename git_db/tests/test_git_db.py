@@ -9,6 +9,10 @@ from git_db import GitDict, SearchPage
 from git_db.git_db import PageTable
 
 
+def make_page_entry(width):
+    return bytes([random.randint(97, 122) for x in range(width)])
+
+
 class TestPageTable(unittest.TestCase):
     def test1(self):
         table = PageTable()
@@ -48,13 +52,10 @@ class TestGitDict(unittest.TestCase):
 
 
 class TestSearchPage(unittest.TestCase):
-    def make_page_entry(self, width):
-        return bytes([random.randint(97, 122) for x in range(width)])
-
     def make_page(self, width, nentries, include_entry=None):
         if include_entry:
             assert len(include_entry) == width, (include_entry, width)
-        entries = [self.make_page_entry(width) for _ in range(nentries)]
+        entries = [make_page_entry(width) for _ in range(nentries)]
         if include_entry:
             entries += [include_entry]
         for entry in sorted(entries):
@@ -64,25 +65,25 @@ class TestSearchPage(unittest.TestCase):
 
     def test18_missing(self):
         for _ in range(10):
-            entry = self.make_page_entry(18)
+            entry = make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20))
             self.assertIsNone(page.get(entry))
 
     def test18_present(self):
         for _ in range(100):
-            entry = self.make_page_entry(18)
+            entry = make_page_entry(18)
             page = self.make_page(18, random.randint(1, 20), entry)
             self.assertEqual(page.get(entry), b'')
 
     def test38_missing(self):
         for _ in range(10):
-            entry = self.make_page_entry(38)
+            entry = make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20))
             self.assertIsNone(page.get(entry[:18]))
 
     def test38_present(self):
         for _ in range(100):
-            entry = self.make_page_entry(38)
+            entry = make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20), entry)
             self.assertEqual(page.get(entry[:18]), entry[18:])
 
@@ -100,7 +101,7 @@ class TestSearchPage(unittest.TestCase):
 
     def test_contains(self):
         for _ in range(100):
-            entry = self.make_page_entry(38)
+            entry = make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20), entry)
             self.assertIn(entry[:18], page)
 
@@ -168,7 +169,7 @@ class TestSearchPage(unittest.TestCase):
 
     def test_setitem9(self):
         for _ in range(100):
-            entry = self.make_page_entry(38)
+            entry = make_page_entry(38)
             page = self.make_page(38, random.randint(1, 20))
             page[entry[:18]] = entry[18:]
             self.assertIn(entry[:18], page)
