@@ -105,13 +105,9 @@ class SearchPage():
         return value
 
     def __setitem__(self, key, value):
-        if len(key) != self.key_width:
-            raise ValueError(key)
-
         if len(value) != self.value_width:
             raise ValueError(value)
 
-        new_entry = b'%s%s' % (key, value)
         entry, k = self.get_entry(key)
 
         if isinstance(entry, bytes):
@@ -124,6 +120,7 @@ class SearchPage():
                 k += 1
 
         entry_pos = k * self.width
+        new_entry = b'%s%s' % (key, value)
         self.data = b'%s%s%s' % (self.data[:entry_pos], new_entry,
                                  self.data[entry_pos + offset:])
 
