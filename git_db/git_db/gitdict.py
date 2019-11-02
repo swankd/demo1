@@ -8,7 +8,7 @@ class GitDict():
     def __init__(self, dir_, name, log=None, do_create=False, refs_ns='tags'):
         self.dir_ = dir_
         self.name = name
-        self.nname = 'n' + name
+        self.name_size = name + '.size'
         self.log = log or print
         self.refs_ns = refs_ns
         try:
@@ -34,11 +34,11 @@ class GitDict():
             self.repo.references.create(f'refs/{self.refs_ns}/{name}', target)
 
     def _init(self):
-        self._set_reference(self.nname, self.repo.write(GIT_OBJ_BLOB, '0'))
+        self._set_reference(self.name_size, self.repo.write(GIT_OBJ_BLOB, '0'))
         self._set_reference(self.name, self.none)
 
     def __len__(self):
-        return int(self.repo[self._lookup_reference(self.nname).target])
+        return int(self.repo[self._lookup_reference(self.name_size).target])
 
     def __contains__(self, key):
         id_ = self._lookup_reference(self.name).target
@@ -53,7 +53,7 @@ class GitDict():
         new_head = self.repo.write(GIT_OBJ_BLOB, json.dumps([element, str(old_head)]))
         self._set_reference(self.name, new_head)
         new_size = self.repo.write(GIT_OBJ_BLOB, str(len(self) + 1))
-        self._set_reference(self.nname, new_size)
+        self._set_reference(self.name_size, new_size)
 
     def report(self):
         self.log(f'{repr(self)}: contains {len(self)} elements.')
