@@ -3,14 +3,10 @@ from os.path import join
 
 from bdb_tool import open_db, BdbUniqueId
 
-from .config import get_config
-
 
 class BdbRDFGraph():
-    def __init__(self, config=None, log=None):
-        self.config = config or get_config()
+    def __init__(self, dir_, log=None):
         self.log = log or print
-        dir_ = self.config['db_dir']
         self.nouns = BdbUniqueId(dir_, 'noun', log=self.log)
         self.verbs = BdbUniqueId(dir_, 'verb', log=self.log)
 
