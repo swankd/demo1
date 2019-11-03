@@ -70,10 +70,13 @@ class GitDict():
         self._set_reference(self.name_size, new_size)
 
     def __contains__(self, key):
+        return True if self.get(key) is not None else False
+
+    def get(self, key, default=None):
         try:
-            return self[key] and True
+            return self[key]
         except KeyError:
-            return False
+            return default
 
     def _key_oid_and_h_key(self, oid):
         return oid.raw, int(oid.hex[:self.h_key_len], 16)
