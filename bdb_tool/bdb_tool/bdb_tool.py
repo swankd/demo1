@@ -60,9 +60,5 @@ class BdbUniqueId(object):
     def element_str(self, str_id):
         return self.element(str_id.encode('ascii')).decode('unicode_escape')
 
-    def compact(self):
-        self.elements.compact()
-        self.ids.compact()
-
     def items(self):
         return self.ids.items()
