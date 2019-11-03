@@ -41,10 +41,10 @@ def _edges(db_, id_):
 
 @app.route('/')
 def root():
-    return '<br>\n'.join([f'{graph.nnouns} nouns',
-                          f'{graph.nverbs} verbs',
-                          f'{graph.n_in_edges} inbound edges',
-                          f'{graph.n_out_edges} outbound edges'])
+    return '<br>\n'.join([f'{len(graph.nouns)} nouns',
+                          f'{len(graph.verbs)} verbs',
+                          f'{len(graph.in_edges)} inbound edges',
+                          f'{len(graph.out_edges)} outbound edges'])
 
 
 @app.route('/noun/')

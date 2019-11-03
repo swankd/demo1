@@ -1,7 +1,7 @@
 
 from os.path import join
 
-from bdb_tool import open_db, db_nkeys, BdbUniqueId
+from bdb_tool import open_db, BdbUniqueId
 
 from .config import get_config
 
@@ -20,21 +20,5 @@ class BdbRDFGraph():
         # outbound edges: (predicate, object) pairs keyed by subject.
         self.out_edges = open_db(join(dir_, 'out_edges.db3'))
 
-        self.log(f'number of in edges is {self.n_in_edges}')
-        self.log(f'number of out edges is {self.n_out_edges}')
-
-    @property
-    def nnouns(self):
-        return db_nkeys(self.nouns.elements, 'noun')
-
-    @property
-    def nverbs(self):
-        return db_nkeys(self.verbs.elements, 'verb')
-
-    @property
-    def n_in_edges(self):
-        return db_nkeys(self.in_edges, 'in edge')
-
-    @property
-    def n_out_edges(self):
-        return db_nkeys(self.out_edges, 'out edge')
+        self.log(f'number of in edges is {len(self.in_edges)}')
+        self.log(f'number of out edges is {len(self.out_edges)}')

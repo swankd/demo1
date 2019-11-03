@@ -38,20 +38,21 @@ class BdbUniqueId(object):
         self.log = log
         self.elements = open_db(join(dir_, f'{name}{suffix}'), **open_db_kwargs)
         self.ids = open_db(join(dir_, f'{name}id{suffix}'), **open_db_kwargs)
-        self.n_elements = db_nkeys(self.elements, name, log)
+        n_elements = db_nkeys(self.elements, name, log)
         n_ids = db_nkeys(self.ids, name + 'id', log)
-        if self.n_elements != n_ids:
+        if n_elements != n_ids:
             msg = 'W: n_elements ({}) != n_ids ({}), {}, {}, {}'
-            self.log(msg.format(self.n_elements, n_ids, dir_, name, suffix))
+            self.log(msg.format(n_elements, n_ids, dir_, name, suffix))
         self.log(f'number of {name}s is {n_ids}')
+
+    def __len__(self):
+        return len(self.ids)
 
     def element_id(self, str_):
         id_ = self.elements.get(str_)
         if not id_:
-            self.n_elements += 1
-            id_ = str(self.n_elements).encode('ascii')
-            self.elements.put(str_, id_)
-            self.ids.put(id_, str_)
+            self.elements[str_] = id_ = str(len(self)).encode('ascii')
+            self.ids[id_] = str_
         return id_
 
     def element(self, id_):
