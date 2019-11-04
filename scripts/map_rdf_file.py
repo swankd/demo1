@@ -12,7 +12,7 @@ from io import BytesIO
 from os.path import isdir, isfile, join
 from rdflib.plugins.parsers.ntriples import NTriplesParser, ParseError, Sink
 
-from bdb_tool import open_db, db_nkeys, BdbUniqueId
+from bdb_tool import open_db, BdbUniqueId
 
 
 def parse_args():
@@ -46,8 +46,10 @@ class BdbSink(Sink):
         self.nlines = 0
         self.nouns = BdbUniqueId(outpath, 'noun', log=print)
         self.verbs = BdbUniqueId(outpath, 'verb', log=print)
-        self.edges = open_db(join(outpath, 'edges.db3'))
-        print('number of edges is', db_nkeys(self.edges, 'edges'))
+        self.in_edges = open_db(join(outpath, 'in_edges.db3'))
+        self.out_edges = open_db(join(outpath, 'out_edges.db3'))
+        print('number of in edges is', len(self.in_edges))
+        print('number of out edges is', len(self.out_edges))
         self.progress_time = self.last_gc_time = time.time()
 
     def progress(self, count):
@@ -57,21 +59,27 @@ class BdbSink(Sink):
         self.progress_time = now
         sys.stderr.write('progress: {}    \r'.format(count))
 
+    def map_edge(self, db, sid, pid, oid):
+        s_edges = set([tuple(edge) for edge in json.loads(db.get(sid) or '[]')])
+        s_edge = (pid.decode('ascii'), oid.decode('ascii'))
+        if s_edge not in s_edges:
+            s_edges.add(s_edge)
+            db[sid] = json.dumps(list(s_edges))
+
     def triple(self, s, p, o):
         self.nlines += 1
         sid = self.nouns.element_id(element_str(s))
         pid = self.verbs.element_id(element_str(p))
         oid = self.nouns.element_id(element_str(o))
-        s_edges = set([tuple(edge) for edge in json.loads(self.edges.get(sid) or '[]')])
-        s_edge = (pid.decode('ascii'), oid.decode('ascii'))
-        if s_edge not in s_edges:
-            s_edges.add(s_edge)
-            self.edges.put(sid, json.dumps(list(s_edges)))
+        self.map_edge(self.in_edges, oid, pid, sid)
+        self.map_edge(self.out_edges, sid, pid, oid)
+
         now = time.time()
         if now - self.last_gc_time > 100:
             print('gc', now)
             gc.collect()
             self.last_gc_time = now
+
         self.progress(self.nlines)
 
 
@@ -86,6 +94,7 @@ def process_file(infile, sink):
             parser.parse(s)
         except (ParseError, ElementStrError) as e:
             bad_lines[line] += 1
+
     print('read {} lines from {}'.format(sink.nlines, infile.name))
     print('bad lines and their frequencies:')
     for line, count in bad_lines.items():
