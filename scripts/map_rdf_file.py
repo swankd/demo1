@@ -12,7 +12,7 @@ from io import BytesIO
 from os.path import isdir, isfile, join
 from rdflib.plugins.parsers.ntriples import NTriplesParser, ParseError, Sink
 
-from bdb_tool import open_db, BdbUniqueId
+from bdb_tool import BdbRDFGraph
 
 
 def parse_args():
@@ -41,15 +41,10 @@ def element_str(element):
             raise ElementStrError()
 
 
-class BdbSink(Sink):
+class BdbSink(Sink, BdbRDFGraph):
     def __init__(self, outpath):
         self.nlines = 0
-        self.nouns = BdbUniqueId(outpath, 'noun', log=print)
-        self.verbs = BdbUniqueId(outpath, 'verb', log=print)
-        self.in_edges = open_db(join(outpath, 'in_edges.db3'))
-        self.out_edges = open_db(join(outpath, 'out_edges.db3'))
-        print('number of in edges is', len(self.in_edges))
-        print('number of out edges is', len(self.out_edges))
+        BdbRDFGraph.__init__(self, outpath)
         self.progress_time = self.last_gc_time = time.time()
 
     def progress(self, count):
