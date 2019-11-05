@@ -44,6 +44,10 @@ class H5Group():
     def __len__(self):
         return self.size.value
 
+    def get(self, key, default=None):
+        value = self.elements.get(key)
+        return value.value if value else default
+
     def __getitem__(self, key):
         return self.elements[key].value
 
