@@ -38,6 +38,9 @@ class H5Group():
             else:
                 raise e
 
+    def __repr__(self):
+        return f'H5Group({self.name})'
+
     def __len__(self):
         return self.size.value
 
@@ -69,6 +72,9 @@ class H5UniqueId():
             else:
                 raise e
 
+    def __repr__(self):
+        return f'H5UniqueId({self.name})'
+
     def __len__(self):
         return self.size.value
 
@@ -97,7 +103,7 @@ class H5Graph():
         self.out_edges = H5Group(self.file, 'out_edges', do_create)
 
     def __repr__(self):
-        return f'H5Graph({self.path}'
+        return f'H5Graph({self.path})'
 
     @property
     def n_nouns(self):
