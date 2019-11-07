@@ -14,16 +14,18 @@ class TestH5UniqueId(unittest.TestCase):
             elements = H5UniqueId(h5py.File(f.name), 'stuff', do_create=True)
             self.assertEqual(len(elements), 0)
 
-            x = elements.element_id('x')
-            y = elements.element_id('y')
+            x = elements.element_id(b'x')
+            y = elements.element_id(b'y')
             self.assertEqual(len(elements), 2)
+            z = elements.element_id(b'z/z.z')
 
             self.assertNotEqual(x, y)  # uniqueness
-            self.assertEqual(x, elements.element_id('x'))  # consistency
-            self.assertEqual(y, elements.element_id('y'))  # consistency
-            self.assertEqual('x', elements.element(x))  # inverse
-            self.assertEqual('y', elements.element(y))  # inverse
-            self.assertEqual(len(elements), 2)
+            self.assertEqual(x, elements.element_id(b'x'))  # consistency
+            self.assertEqual(y, elements.element_id(b'y'))  # consistency
+            self.assertEqual(b'x', elements.element(x))  # inverse
+            self.assertEqual(b'y', elements.element(y))  # inverse
+            self.assertEqual(b'z/z.z', elements.element(z))  # inverse
+            self.assertEqual(len(elements), 3)
 
 
 class TestH5Graph(unittest.TestCase):
@@ -35,9 +37,9 @@ class TestH5Graph(unittest.TestCase):
             self.assertEqual(graph.n_in_edges, 0)
             self.assertEqual(graph.n_out_edges, 0)
 
-            x = graph.nouns.element_id('x')
-            y = graph.nouns.element_id('y')
-            z = graph.verbs.element_id('z')
+            x = graph.nouns.element_id(b'x')
+            y = graph.nouns.element_id(b'y')
+            z = graph.verbs.element_id(b'z')
             graph.in_edges[x] = json.dumps((y, z))
             graph.out_edges[y] = json.dumps((x, z))
 

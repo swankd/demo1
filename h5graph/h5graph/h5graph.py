@@ -1,5 +1,6 @@
 
 import h5py
+import re
 
 
 class H5GroupSize():
@@ -83,6 +84,10 @@ class H5UniqueId():
         return self.size.value
 
     def element_id(self, str_):
+        assert isinstance(str_, bytes), repr(str_)
+        assert 0x90 not in str_, (str_, len(self))
+        assert 0x91 not in str_, (str_, len(self))
+        str_ = re.sub(b'[.]', b'\x91', re.sub(b'/', b'\x90', str_))
         id_ = self.elements.get(str_)
         if id_:
             id_ = id_.value
@@ -93,7 +98,7 @@ class H5UniqueId():
         return id_
 
     def element(self, id_):
-        return self.ids.get(id_).value
+        return re.sub(b'\x91', b'.', re.sub(b'\x90', b'/', self.ids.get(id_).value))
 
 
 class H5Graph():
