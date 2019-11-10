@@ -47,16 +47,16 @@ def root():
 
 @app.route('/noun/')
 def nouns():
-    nitems = request_args('nitems', int, 20)
+    limit = request_args('limit', int, 20)
     return '<br>\n'.join([f'{key} : {value}'
-                          for key, value in graph.nouns.items()[:nitems]])
+                          for key, value in graph.nouns.items()[:limit]])
 
 
 @app.route('/verb/')
 def verbs():
-    nitems = request_args('nitems', int, 20)
+    limit = request_args('limit', int, 20)
     return '<br>\n'.join([f'{key} : {value}'
-                          for key, value in graph.verbs.items()[:nitems]])
+                          for key, value in graph.verbs.items()[:limit]])
 
 
 @app.route('/noun/<id_>')
