@@ -1,11 +1,10 @@
 
-import json
-
 from flask import abort, jsonify, request, url_for
 
 from .app import app
 
 graph = app.graph
+ROUTE_FOR_POSITION = ('subject', 'predicate', 'object_')
 
 
 def request_args(name, func, default):
@@ -15,55 +14,78 @@ def request_args(name, func, default):
         return None
 
 
-def noun_reference(id_):
-    try:
-        return {'value': graph.nouns.element_str(id_), 'href': url_for('noun', id_=id_)}
-    except AttributeError:
+def _reference(id_, position):
+    return {'term': graph.term(id_, position),
+            'href': url_for(ROUTE_FOR_POSITION[int(position) - 1], id_=id_)}
+
+
+def _reference_list(position):
+    limit = request_args('limit', int, 20)
+    offset = request_args('offset', int, 1)  # ids are 1-based
+    max_offset = graph.nb_s_p_o[int(position) - 1]
+    if offset > max_offset:
         abort(404)
 
-
-def verb_reference(id_):
-    return graph.verbs.element_str(id_)
-
-
-def in_edge(pid, sid):
-    return {'predicate': verb_reference(pid), 'subject': noun_reference(sid)}
-
-
-def out_edge(pid, oid):
-    return {'predicate': verb_reference(pid), 'object': noun_reference(oid)}
-
-
-def _edges(db_, id_):
-    return set([tuple(edge) for edge in json.loads(db_.get(id_.encode('ascii')) or '[]')])
+    refs = []
+    for id_ in range(min(1000, limit)):
+        ref = _reference(id_ + offset, position)
+        if ref:
+            refs.append(ref)
+    return refs
 
 
 @app.route('/')
 def root():
-    return '<br>\n'.join([f'{len(graph.nouns)} nouns',
-                          f'{len(graph.verbs)} verbs',
-                          f'{len(graph.in_edges)} inbound edges',
-                          f'{len(graph.out_edges)} outbound edges'])
+    return '<br>\n'.join([f'{graph.total_triples} triples',
+                          f'{graph.nb_subjects} subjects',
+                          f'{graph.nb_predicates} predicates',
+                          f'{graph.nb_objects} objects']) + '\n'
 
 
-@app.route('/noun/')
-def nouns():
-    limit = request_args('limit', int, 20)
-    return '<br>\n'.join([f'{key} : {value}'
-                          for key, value in graph.nouns.items()[:limit]])
+@app.route('/subject/')
+def subjects():
+    return jsonify(subjects=_reference_list(graph.Subject),
+                   nb_subjects=graph.nb_subjects)
 
 
-@app.route('/verb/')
-def verbs():
-    limit = request_args('limit', int, 20)
-    return '<br>\n'.join([f'{key} : {value}'
-                          for key, value in graph.verbs.items()[:limit]])
+@app.route('/predicate/')
+def predicates():
+    return jsonify(predicates=_reference_list(graph.Predicate),
+                   nb_predicates=graph.nb_predicates)
 
 
-@app.route('/noun/<id_>')
-def noun(id_):
-    return jsonify({'noun': noun_reference(id_),
-                    'in_edges': [in_edge(pid, sid)
-                                 for pid, sid in _edges(graph.in_edges, id_)],
-                    'out_edges': [out_edge(pid, oid)
-                                  for pid, oid in _edges(graph.out_edges, id_)]})
+@app.route('/object/')
+def objects():
+    return jsonify(objects=_reference_list(graph.Object),
+                   nb_objects=graph.nb_objects)
+
+
+@app.route('/subject/<int:id_>')
+def subject(id_):
+    def out_edge(pid, oid):
+        return {'predicate': _reference(pid, graph.Predicate),
+                'object': _reference(oid, graph.Object)}
+
+    if id_ < 1 or id_ > graph.nb_subjects:
+        abort(404)
+    return jsonify(subject=_reference(id_, graph.Subject),
+                   out_edges=[out_edge(*edge) for edge in graph.out_edges(id_)])
+
+
+@app.route('/predicate/<int:id_>')
+def predicate(id_):
+    if id_ < 1 or id_ > graph.nb_predicates:
+        abort(404)
+    return jsonify(predicate=_reference(id_, graph.Predicate))
+
+
+@app.route('/object/<int:id_>')
+def object_(id_):
+    def in_edge(sid, pid):
+        return {'subject': _reference(sid, graph.Subject),
+                'predicate': _reference(pid, graph.Predicate)}
+
+    if id_ < 1 or id_ > graph.nb_objects:
+        abort(404)
+    return jsonify(object=_reference(id_, graph.Object),
+                   in_edges=[in_edge(*edge) for edge in graph.in_edges(id_)])
