@@ -4,7 +4,8 @@ import json
 from flask import abort, jsonify, request, url_for
 
 from .app import app
-from .graph import graph
+
+graph = app.graph
 
 
 def request_args(name, func, default):
