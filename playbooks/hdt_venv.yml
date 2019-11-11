@@ -20,12 +20,7 @@
     user:
       name: "{{ APP_USER }}"
 
-  - name: pip install pybind11 into hdt virtualenv
+  - name: pip install packages into virtualenv
     pip:
-      name: pybind11
-      virtualenv: "{{ HDT_VIRTUALENV }}"
-
-  - name: pip install hdt into hdt virtualenv
-    pip:
-      name: hdt
+      name: [pybind11, hdt, flask, pyyaml]
       virtualenv: "{{ HDT_VIRTUALENV }}"
