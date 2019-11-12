@@ -15,7 +15,7 @@ def request_args(name, func, default):
 
 
 def _reference(id_, position):
-    return {'term': graph.term(id_, position),
+    return {'term': graph.convert_id(id_, position),
             'href': url_for(ROUTE_FOR_POSITION[int(position) - 1], id_=id_)}
 
 
