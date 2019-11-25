@@ -31,13 +31,13 @@ Resource-efficiency is a fun engineering challenge.
     apt-get install g++ python3-dev virtualenv
 ```
 
-1. Create a virtualenv.
+2. Create a virtualenv.
 
 ```
     virtualenv -p /usr/bin/python3 VENV_DIR
 ```
 
-1. Install python packages into virtualenv.
+3. Install python packages into virtualenv.
 
 ```
     VENV_DIR/bin/pip install -r requirements.txt
@@ -47,7 +47,7 @@ Resource-efficiency is a fun engineering challenge.
 
 1. Obtain an HDT dataset.
 
-1. Download the index for the dataset.
+2. Download the index for the dataset.
 
     - OR, load the HDT file and wait a few minutes; the index will be created by pyHDT
     automatically when it is not present.  In python:
@@ -57,13 +57,13 @@ Resource-efficiency is a fun engineering challenge.
     >>> HDTDocument('/path/to/hdt/file')
 ```
 
-1. Create config file `$HOME/.rdf_demo_rc` with these contents:
+3. Create config file `$HOME/.rdf_demo_rc` with these contents:
 
 ```
     hdt_file_path: /path/to/hdt/file
 ```
 
-1. Set PYTHONPATH.  (CHECKOUT_DIR is the directory containing this file.)
+4. Set PYTHONPATH.  (CHECKOUT_DIR is the directory containing this file.)
 
 ```
     export PYTHONPATH=CHECKOUT_DIR/rdf_demo/:$PYTHONPATH
