@@ -43,10 +43,7 @@ Resource-efficiency is a fun engineering challenge.
     VENV_DIR/bin/pip install -r requirements.txt
 ```
 
-NOTE: [hdt_venv.yml](playbooks/hdt_venv.yml) automates this process and was
-used in setting up the demo.
-
-# Configure and run
+# Configure
 
 1. Obtain an HDT dataset.
 
@@ -72,7 +69,9 @@ used in setting up the demo.
     export PYTHONPATH=CHECKOUT_DIR/rdf_demo/:$PYTHONPATH
 ```
 
-1. Run the demo.  This will start an HTTP server at 127.0.0.1:5000.
+# Run
+
+This will start an HTTP server at 127.0.0.1:5000.
 
 ```
     VENV_DIR/bin/python CHECKOUT_DIR/scripts/run_app.py
