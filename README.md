@@ -18,8 +18,8 @@ RDF Demo is:
 [Graphs](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) are interesting data
 structures.
 
-[RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) is a simple format for
-expressing graph data.
+[RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) is a conceptual model
+for describing graph data.
 
 Resource-efficiency is a fun engineering challenge.
 
