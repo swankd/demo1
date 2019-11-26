@@ -23,7 +23,9 @@ for describing graph data.
 
 Resource-efficiency is a fun engineering challenge.
 
-# Installation
+# How to use it
+
+## Setup
 
 1. Install system packages.
 
@@ -43,7 +45,7 @@ Resource-efficiency is a fun engineering challenge.
     VENV_DIR/bin/pip install -r requirements.txt
 ```
 
-# Configure
+## Configure
 
 1. Obtain an HDT dataset.
 
@@ -70,7 +72,7 @@ Resource-efficiency is a fun engineering challenge.
     export PYTHONPATH=CHECKOUT_DIR/rdf_demo/:$PYTHONPATH
 ```
 
-# Run
+## Run
 
 This will start an HTTP server at 127.0.0.1:5000.
 
