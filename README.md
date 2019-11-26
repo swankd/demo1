@@ -61,6 +61,7 @@ Resource-efficiency is a fun engineering challenge.
 
 ```
     hdt_file_path: /path/to/hdt/file
+    description: "Description of Dataset"
 ```
 
 4. Set PYTHONPATH.  (CHECKOUT_DIR is the directory containing this file.)
