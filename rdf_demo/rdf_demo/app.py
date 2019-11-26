@@ -7,5 +7,6 @@ from .graph import HDTGraph
 config = get_config()
 app = Flask('rdf_demo')
 app.graph = HDTGraph(config['hdt_file_path'])
+app.description = config['description']
 
 from . import views

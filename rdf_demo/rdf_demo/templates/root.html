@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>RDF Demo</title>
+<style>
+.code {
+    font-family: monospace;
+}
+table {
+    padding: 10px;
+}
+</style>
+</head>
+<body>
+
+<h1>RDF Demo</h1>
+<h2>What it is</h2>
+<p>
+A web service that makes an
+<a href="https://en.wikipedia.org/wiki/Resource_Description_Framework">RDF</a>
+dataset in <a href="http://www.rdfhdt.org/">HDT</a> format available for use in web
+applications.  Access to the dataset is read-only.
+</p>
+
+<p>
+The dataset served by this site is {{ dataset_description }}.  It consists of:
+  <ul>
+    <li>{{ ntriples }} triples.
+    <li>{{ nsubjects }} subjects.
+    <li>{{ npredicates }} predicates.
+    <li>{{ nobjects }} objects.
+  </ul>
+</p>
+
+<p>
+The code running this site is open source!  Visit
+<a href="https://github.com/swankd/rdf-demo">https://github.com/swankd/rdf-demo</a> to
+learn more.
+</p>
+
+<h2>How to use it</h2>
+<p>
+Slices of each collection can be read via these types of urls:
+  <table>
+    <tr>
+      <th>pattern</th>
+      <th>example</th>
+    </tr>
+  {% for route in 'subject', 'predicate', 'object' %}
+    {% set url = url_for(route + 's', limit=5, offset=100000) %}
+    <tr>
+      <td class="code">/{{ route }}/?limit=&lt;n&gt;&amp;offset=&lt;m&gt;</td>
+      <td><a href="{{ url }}">{{ url }}</a></td>
+    </tr>
+  {% endfor %}
+  </table>
+</p>
+
+<p>
+Individual objects can be read via these types of urls:
+  <table>
+    <tr>
+      <th>pattern</th>
+      <th>example</th>
+    </tr>
+  {% for route in 'subject', 'predicate', 'object' %}
+    <tr>
+      <td class="code">/{{ route }}/&lt;id&gt;</td>
+      <td><a href="/{{ route }}/1">/{{ route }}/1</a></td>
+    </tr>
+  {% endfor %}
+  </table>
+</p>
+
+</body>
+</html>

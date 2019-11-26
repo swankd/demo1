@@ -1,5 +1,5 @@
 
-from flask import abort, jsonify, request, url_for
+from flask import abort, jsonify, render_template, request, url_for
 
 from .app import app
 
@@ -36,10 +36,12 @@ def _reference_list(position):
 
 @app.route('/')
 def root():
-    return '<br>\n'.join([f'{graph.total_triples} triples',
-                          f'{graph.nb_subjects} subjects',
-                          f'{graph.nb_predicates} predicates',
-                          f'{graph.nb_objects} objects']) + '\n'
+    return render_template('root.html',
+                           dataset_description=app.description,
+                           ntriples=graph.total_triples,
+                           nsubjects=graph.nb_subjects,
+                           npredicates=graph.nb_predicates,
+                           nobjects=graph.nb_objects)
 
 
 @app.route('/subject/')
