@@ -8,11 +8,6 @@ RDF Demo is:
 - a web service that makes an RDF dataset in [HDT](http://www.rdfhdt.org/) format
     available for use in web applications.
 
-- live at http://34.223.88.59/.
-
-- lightweight!  ... The demo host is a two-core Amazon EC2 `t3a.micro` instance with 1GB of
-    RAM, serving a 1.1B triple dataset: the DBPedia 2016-10 English release.
-
 # Why it is
 
 [Graphs](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) are interesting data
